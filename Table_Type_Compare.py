@@ -8,6 +8,7 @@ from Type_Compare.db_oracle_module_compare.Source_Function_Compare import *
 from Type_Compare.db_mysql_module_compare.Target_Function_Compare import *
 from Type_Compare.comm_py_module_compare.compare_data_types import *
 from Type_Compare.comm_py_module_compare.Database_colse_compare import *
+from Type_Compare.comm_py_module_compare.write_file_compare import *
 
 cf = ConfigParser()
 exe_path = sys.path[0]
@@ -16,7 +17,7 @@ cf.read(os.path.join(exe_path, 'config.ini'))
 # 入参设定
 schema_name_source = sys.argv[1]
 schema_name_target = sys.argv[2]
-
+compare_result_txt = cf.get('addr', 'compare_result')
 # 规则表source数据库参数
 db_type_source = cf.get('source', 'db_type')
 db_name_source = cf.get('source', 'db_name')
@@ -51,13 +52,12 @@ target_conn = back_target[0]
 target_cursor = back_target[1]
 #获取目端表字段类型
 target_table_columns_type = Target_coltype_sql_get(target_cursor,db_name_source)
-
 #比较源端和目标端字段类型
 compare_result = compare_data_types(source_table_columns_type,target_table_columns_type,db_type_source,db_type_target)
-
 #写入目标数据库
-Oracle_insert_compare(source_cursor,compare_result,source_conn)
+#Oracle_insert_compare(source_cursor,compare_result,source_conn)
 
+write_aligned_txt(compare_result,compare_result_txt)
 # 关闭源端数据库连接
 Source_database_close(db_type_source, source_cursor, source_conn)
 #关闭目标端数据库连接
